@@ -1,16 +1,9 @@
 ﻿#include <iostream>
 #include <string>
 #include <stack>
+#include "AbstractCalculator.h"
 
 using namespace std;
-
-
-class AbstractCalculator {
-public:
-    virtual double calculate(const string& input) = 0;
-    virtual ~AbstractCalculator() {}
-};
-
 
 class Calculator : public AbstractCalculator {
 public:
@@ -21,9 +14,7 @@ private:
     static int NextActionDetector(const string& input, int startIndex, int endIndex);
 };
 
-
-double Calculator::Action(double num1, double num2, char op)
-{
+double Calculator::Action(double num1, double num2, char op) {
     switch (op) {
     case '+':
         return num1 + num2;
@@ -38,8 +29,7 @@ double Calculator::Action(double num1, double num2, char op)
     }
 }
 
-int Calculator::NextActionDetector(const string& input, int startIndex, int endIndex)
-{
+int Calculator::NextActionDetector(const string& input, int startIndex, int endIndex) {
     int parenthesesCounter = 0;
     for (int i = endIndex; i >= startIndex; --i) {
         if (input[i] == ')')
@@ -62,9 +52,7 @@ int Calculator::NextActionDetector(const string& input, int startIndex, int endI
     return -1; // Return -1 if no operation found
 }
 
-
-double Calculator::calculate(const string& input)
-{
+double Calculator::calculate(const string& input) {
     stack<char> operatorStack;
     stack<double> operandStack;
 
@@ -121,7 +109,7 @@ double Calculator::calculate(const string& input)
 
     while (!operatorStack.empty()) {
         char op = operatorStack.top();
-         operatorStack.pop();
+        operatorStack.pop();
 
         double num2 = operandStack.top();
         operandStack.pop();
@@ -135,42 +123,24 @@ double Calculator::calculate(const string& input)
     return operandStack.top();
 }
 
-// Abstract class for CalculatorFactory
-class AbstractCalculatorFactory {
-public:
-    virtual AbstractCalculator* createCalculator() = 0;
-    virtual ~AbstractCalculatorFactory() {}
-};
-
-// CalculatorFactory to create Calculator objects
-class CalculatorFactory : public AbstractCalculatorFactory {
-public:
-    AbstractCalculator* createCalculator() override;
-};
-
-// Implementation of CalculatorFactory
-AbstractCalculator* CalculatorFactory::createCalculator()
-{
+AbstractCalculator* AbstractCalculator::createCalculator() {
     return new Calculator();
 }
 
-int main()
-{
+int main() {
     string input;
     cout << "Enter an expression with parentheses: ";
     getline(cin, input);
 
-    // Create the Calculator object using the CalculatorFactory
-    AbstractCalculatorFactory* calculatorFactory = new CalculatorFactory();
-    AbstractCalculator* calculator = calculatorFactory->createCalculator();
+    // Создание объекта Calculator с использованием фабричного метода из AbstractCalculator
+    AbstractCalculator* calculator = AbstractCalculator::createCalculator();
 
-    // Use the calculator to evaluate the expression
+    // Использование калькулятора для вычисления выражения
     double result = calculator->calculate(input);
     cout << "Result: " << result << endl;
 
-    // Clean up
+    // Очистка
     delete calculator;
-    delete calculatorFactory;
 
     return 0;
 }
